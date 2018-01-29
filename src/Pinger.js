@@ -29,7 +29,11 @@ export default class {
     } else {
       this.isReset = false;
       this._client._trace('Pinger.doPing', 'send PINGREQ');
-      this._client.socket && this._client.socket.send(this.pingReq);
+      try {
+        this._client.socket && this._client.socket.send(this.pingReq);
+      } catch (e) {
+        this.client._trace('Pinger.failedPing', 'failed to send PINGREQ:' + e.message);
+      }
       this.timeout = setTimeout(() => this._doPing(), this._keepAliveIntervalMs);
     }
   }
