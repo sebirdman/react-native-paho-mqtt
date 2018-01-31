@@ -32,7 +32,7 @@ export default class {
       try {
         this._client.socket && this._client.socket.send(this.pingReq);
       } catch (e) {
-        this.client._trace('Pinger.failedPing', 'failed to send PINGREQ:' + e.message);
+        this._client._trace('Pinger.failedPing', 'failed to send PINGREQ:' + e.message);
       }
       this.timeout = setTimeout(() => this._doPing(), this._keepAliveIntervalMs);
     }
