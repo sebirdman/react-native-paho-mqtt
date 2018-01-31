@@ -151,7 +151,12 @@ class ClientImplementation {
       this._trace('socket.send', { ...wireMessage, options: maskedCopy });
 
       this.socket && (this.socket.onopen = () => null);
-      this.socket && (this.socket.send(wireMessage.encode()));
+
+      try {
+        this.socket && (this.socket.send(wireMessage.encode()));
+      } catch (e) {
+        this._trace('socket.send', 'failed to send:' + e.message);
+      }
     };
 
     this.socket.onmessage = (event) => {
@@ -415,7 +420,11 @@ class ClientImplementation {
     let wireMessage;
     while ((wireMessage = this._messagesAwaitingDispatch.shift())) {
       this._trace('Client._socketSend', wireMessage);
-      socket && socket.send(wireMessage.encode());
+      try {
+        socket && socket.send(wireMessage.encode());
+      } catch (e) {
+        this._trace('Client._socketSend failed to wire away', wireMessage);
+      }
       wireMessage.onDispatched && wireMessage.onDispatched();
     }
 
@@ -643,7 +652,12 @@ class ClientImplementation {
   /** @ignore */
   _socketSend(wireMessage: WireMessage) {
     this._trace('Client._socketSend', wireMessage);
-    this.socket && this.socket.send(wireMessage.encode());
+
+    try {
+      this.socket && this.socket.send(wireMessage.encode());
+    } catch (e) {
+      this._trace('Client._socketSend failed to wire away 2', wireMessage);
+    }
     // We have proved to the server we are alive.
     this.sendPinger && this.sendPinger.reset();
   }
